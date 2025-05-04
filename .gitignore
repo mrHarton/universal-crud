@@ -1,0 +1,21 @@
+# OS/system files
+.DS_Store
+Thumbs.db
+
+# Environment/config
+config/config.php
+.env
+
+# Database (if SQLite)
+*.sqlite
+
+# Logs and cache
+/storage/*
+!.gitkeep
+
+# IDEs/editors
+.vscode/
+.idea/
+
+# Vendor (if Composer ever used)
+vendor/

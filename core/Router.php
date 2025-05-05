@@ -1,11 +1,12 @@
 <?php
+
 class Router
 {
     public function dispatch()
     {
         $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
-        $segments = explode('/', $uri);
-
+        $segments = array_values(array_filter(explode('/', $uri)));  // ← Убираем пустые сегменты
+        
         $controllerName = $segments[0] ?? 'home';
         $actionName = $segments[1] ?? 'index';
         $params = array_slice($segments, 2);
@@ -13,16 +14,37 @@ class Router
         $controllerClass = ucfirst($controllerName) . 'Controller';
         $controllerFile = __DIR__ . '/../app/Controllers/' . $controllerClass . '.php';
 
-        if (file_exists($controllerFile)) {
-            require_once $controllerFile;
-            $controller = new $controllerClass;
-            if (method_exists($controller, $actionName)) {
-                call_user_func_array([$controller, $actionName], $params);
-                return;
-            }
+        // Отладка
+        // echo "<pre>";
+        // echo "URI: $uri\n";
+        // echo "Controller: $controllerClass\n";
+        // echo "Action: $actionName\n";
+        // echo "Looking for file: $controllerFile\n";
+        // echo "</pre>";
+
+        if (!file_exists($controllerFile)) {
+            http_response_code(404);
+            echo "Controller file not found";
+            return;
         }
 
-        http_response_code(404);
-        echo "404 Not Found";
+        require_once $controllerFile;
+
+        if (!class_exists($controllerClass)) {
+            http_response_code(404);
+            echo "Controller class $controllerClass not found";
+            return;
+        }
+
+        $controller = new $controllerClass;
+
+        if (!method_exists($controller, $actionName)) {
+            http_response_code(404);
+            echo "Method $actionName not found in $controllerClass";
+            return;
+        }
+
+        // Всё ок — вызываем метод
+        call_user_func_array([$controller, $actionName], $params);
     }
 }

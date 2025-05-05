@@ -1,0 +1,13 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Переходим в корень проекта
+    RewriteBase /
+
+    # Если запрашиваемый файл или директория существует — не переписываем
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Все остальные запросы отправляем в index.php
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>

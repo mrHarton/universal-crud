@@ -1,44 +1,52 @@
-<h1>Create New Collection</h1>
-<form method="post" action="/admin/store">
-    <label>Display Name:</label><br>
-    <input name="display_name"><br><br>
+<h1>Создать новую коллекцию</h1>
 
-    <label>Table Name (no spaces):</label><br>
-    <input name="table_name"><br><br>
+<form method="post" action="/admin/store" id="collection-form">
+    <label>
+        Отображаемое имя:
+        <input type="text" name="display_name" required>
+    </label>
+    <br>
+    <label>
+        Техническое имя таблицы:
+        <input type="text" name="table_name" required pattern="[a-zA-Z_][a-zA-Z0-9_]*"
+            title="Только латиница, цифры и подчёркивание">
+    </label>
+
+    <hr>
 
     <div id="fields">
-        <h3>Fields</h3>
-        <div class="field-group">
-            <input name="fields[0][name]" placeholder="Field Name">
+        <h3>Поля:</h3>
+        <div class="field">
+            <input type="text" name="fields[0][name]" placeholder="Имя поля" required>
             <select name="fields[0][type]">
-                <option value="string">String</option>
-                <option value="text">Text</option>
-                <option value="int">Integer</option>
-                <option value="date">Date</option>
+                <option value="TEXT">Текст</option>
+                <option value="INTEGER">Число</option>
+                <option value="REAL">Десятичное</option>
+                <option value="DATE">Дата</option>
             </select>
         </div>
     </div>
 
-    <button type="button" onclick="addField()">+ Add Field</button><br><br>
-    <button type="submit">Create Collection</button>
+    <button type="button" onclick="addField()">Добавить поле</button>
+    <br><br>
+    <button type="submit">Создать коллекцию</button>
 </form>
 
 <script>
-let fieldIndex = 1;
-function addField() {
-    const fields = document.getElementById('fields');
-    const group = document.createElement('div');
-    group.className = 'field-group';
-    group.innerHTML = `
-        <input name="fields[${fieldIndex}][name]" placeholder="Field Name">
+    let fieldIndex = 1;
+    function addField() {
+        const div = document.createElement('div');
+        div.classList.add('field');
+        div.innerHTML = `
+        <input type="text" name="fields[${fieldIndex}][name]" placeholder="Имя поля" required>
         <select name="fields[${fieldIndex}][type]">
-            <option value="string">String</option>
-            <option value="text">Text</option>
-            <option value="int">Integer</option>
-            <option value="date">Date</option>
+            <option value="TEXT">Текст</option>
+            <option value="INTEGER">Число</option>
+            <option value="REAL">Десятичное</option>
+            <option value="DATE">Дата</option>
         </select>
     `;
-    fields.appendChild(group);
-    fieldIndex++;
-}
+        document.getElementById('fields').appendChild(div);
+        fieldIndex++;
+    }
 </script>

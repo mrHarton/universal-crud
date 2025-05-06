@@ -1,24 +1,29 @@
 <?php
 
-class AdminController {
+class AdminController
+{
     public function dashboard()
     {
         View::render('admin/dashboard');
     }
 
-    public function create() {
-        require __DIR__ . '/../Views/admin/create.php';
+    public function create()
+    {
+        View::render('admin/create');
     }
 
     public function collections()
     {
-        // Заглушка — позже сюда подгрузим коллекции из базы
-        $collections = []; // пока пусто
-
+        $pdo = Database::getInstance()->getConnection();
+        $stmt = $pdo->query("SELECT * FROM collections");
+        $collections = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
         View::render('admin/collections', ['collections' => $collections]);
     }
+    
 
-    public function store() {
+    public function store()
+    {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo "Method Not Allowed";
@@ -49,10 +54,10 @@ class AdminController {
 
                 $sqlType = match ($type) {
                     'string' => 'VARCHAR(255)',
-                    'text'   => 'TEXT',
-                    'int'    => 'INTEGER',
-                    'date'   => 'DATE',
-                    default  => 'TEXT'
+                    'text' => 'TEXT',
+                    'int' => 'INTEGER',
+                    'date' => 'DATE',
+                    default => 'TEXT'
                 };
                 $createFields[] = "$name $sqlType";
             }

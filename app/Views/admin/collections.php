@@ -1,13 +1,14 @@
-<h1>Все коллекции</h1>
+<h1>Список коллекций</h1>
 
-<?php if (empty($collections)): ?>
-    <p>Пока нет созданных коллекций.</p>
-<?php else: ?>
-    <ul>
-        <?php foreach ($collections as $collection): ?>
-            <li><?= htmlspecialchars($collection['name']) ?></li>
-        <?php endforeach; ?>
-    </ul>
-<?php endif; ?>
+<a href="/admin/create">➕ Создать новую коллекцию</a>
 
-<p><a href="/admin/create">Создать новую коллекцию</a></p>
+<ul>
+    <?php foreach ($collections as $collection): ?>
+        <li>
+            <strong><?= htmlspecialchars($collection['name']) ?></strong> —
+            <code>collection_<?= htmlspecialchars($collection['table_name']) ?></code>
+            &nbsp;
+            <a href="/collections/<?= urlencode($collection['table_name']) ?>/view">Открыть</a>
+        </li>
+    <?php endforeach; ?>
+</ul>

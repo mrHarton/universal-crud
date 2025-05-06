@@ -6,15 +6,24 @@ class Router
     {
         $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
         $segments = array_values(array_filter(explode('/', $uri)));  // ← Убираем пустые сегменты
-        
+
         $controllerName = $segments[0] ?? 'home';
         $actionName = $segments[1] ?? 'index';
         $params = array_slice($segments, 2);
 
-        if ($segments[0] === 'collections' && ($segments[2] ?? '') === 'view') {
+        // Спец-маршрут: просмотр коллекции
+        if ($controllerName === 'collections' && ($segments[2] ?? '') === 'view') {
             require_once __DIR__ . '/../app/Controllers/CollectionController.php';
             $controller = new CollectionController();
-            $controller->view($segments[1]); // table name
+            $controller->view($segments[1]);
+            return;
+        }
+
+        // Спец-маршрут: добавление записи
+        if ($controllerName === 'collections' && ($segments[2] ?? '') === 'add') {
+            require_once __DIR__ . '/../app/Controllers/CollectionController.php';
+            $controller = new CollectionController();
+            $controller->add($segments[1]);
             return;
         }
 

@@ -33,4 +33,48 @@ class CollectionController
             'fields' => $fields,
         ]);
     }
+
+    public function add($table)
+    {
+        $table = preg_replace('/[^a-zA-Z0-9_]/', '', $table);
+        $pdo = Database::getInstance()->getConnection();
+
+        // Получим поля из схемы
+        $stmt = $pdo->prepare("
+        SELECT cf.field_name, cf.field_type 
+        FROM collection_fields cf
+        JOIN collections c ON c.id = cf.collection_id
+        WHERE c.table_name = ?
+    ");
+        $stmt->execute([$table]);
+        $fields = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Собираем данные
+            $columns = [];
+            $placeholders = [];
+            $values = [];
+
+            foreach ($fields as $field) {
+                $name = $field['field_name'];
+                $columns[] = $name;
+                $placeholders[] = '?';
+                $values[] = $_POST[$name] ?? null;
+            }
+
+            // Вставка
+            $sql = "INSERT INTO collection_$table (" . implode(',', $columns) . ") VALUES (" . implode(',', $placeholders) . ")";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($values);
+
+            header("Location: /collections/$table/view");
+            exit;
+        }
+
+        View::render('collections/add', [
+            'table' => $table,
+            'fields' => $fields,
+        ]);
+    }
+
 }

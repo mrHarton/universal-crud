@@ -51,6 +51,20 @@ class Router
             return;
         }
 
+        if ($uri === 'login') {
+            require_once __DIR__ . '/../app/Controllers/AuthController.php';
+            $controller = new AuthController();
+            $controller->login();
+            return;
+        }
+        
+        if ($uri === 'logout') {
+            require_once __DIR__ . '/../app/Controllers/AuthController.php';
+            $controller = new AuthController();
+            $controller->logout();
+            return;
+        }        
+
         $controllerClass = ucfirst($controllerName) . 'Controller';
         $controllerFile = __DIR__ . '/../app/Controllers/' . $controllerClass . '.php';
 

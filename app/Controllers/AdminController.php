@@ -4,16 +4,34 @@ class AdminController
 {
     public function dashboard()
     {
+        if (!Auth::check() || !Auth::isAdmin()) {
+            http_response_code(403);
+            echo "Доступ запрещён";
+            return;
+        }
+        
         View::render('admin/dashboard');
     }
 
     public function create()
     {
+        if (!Auth::check() || !Auth::isAdmin()) {
+            http_response_code(403);
+            echo "Доступ запрещён";
+            return;
+        }
+        
         View::render('admin/create');
     }
 
     public function collections()
     {
+        if (!Auth::check() || !Auth::isAdmin()) {
+            http_response_code(403);
+            echo "Доступ запрещён";
+            return;
+        }
+        
         $pdo = Database::getInstance()->getConnection();
         $stmt = $pdo->query("SELECT * FROM collections");
         $collections = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -24,6 +42,12 @@ class AdminController
 
     public function store()
     {
+        if (!Auth::check() || !Auth::isAdmin()) {
+            http_response_code(403);
+            echo "Доступ запрещён";
+            return;
+        }
+        
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo "Method Not Allowed";

@@ -27,6 +27,30 @@ class Router
             return;
         }
 
+        // Форма редактирования
+        if ($controllerName === 'collections' && ($segments[2] ?? '') === 'edit') {
+            require_once __DIR__ . '/../app/Controllers/CollectionController.php';
+            $controller = new CollectionController();
+            $controller->edit($segments[1], $segments[3] ?? null);
+            return;
+        }
+
+        // Обновление записи
+        if ($controllerName === 'collections' && ($segments[2] ?? '') === 'update') {
+            require_once __DIR__ . '/../app/Controllers/CollectionController.php';
+            $controller = new CollectionController();
+            $controller->update($segments[1], $segments[3] ?? null);
+            return;
+        }
+
+        // Удаление записи
+        if ($controllerName === 'collections' && ($segments[2] ?? '') === 'delete') {
+            require_once __DIR__ . '/../app/Controllers/CollectionController.php';
+            $controller = new CollectionController();
+            $controller->delete($segments[1], $segments[3] ?? null);
+            return;
+        }
+
         $controllerClass = ucfirst($controllerName) . 'Controller';
         $controllerFile = __DIR__ . '/../app/Controllers/' . $controllerClass . '.php';
 

@@ -10,6 +10,7 @@
                 <?php foreach ($fields as $field): ?>
                     <th><?= htmlspecialchars($field) ?></th>
                 <?php endforeach; ?>
+                <th>Действия</th>
             </tr>
         </thead>
         <tbody>
@@ -19,6 +20,11 @@
                     <?php foreach ($fields as $field): ?>
                         <td><?= htmlspecialchars($row[$field] ?? '') ?></td>
                     <?php endforeach; ?>
+                    <td>
+                        <a href="/collections/<?= $table ?>/edit/<?= $row['id'] ?>">✏️</a>
+                        <a href="/collections/<?= $table ?>/delete/<?= $row['id'] ?>"
+                            onclick="return confirm('Удалить?')">🗑️</a>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

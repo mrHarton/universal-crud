@@ -77,4 +77,87 @@ class CollectionController
         ]);
     }
 
+    public function edit($table, $id)
+    {
+        $table = preg_replace('/[^a-zA-Z0-9_]/', '', $table);
+        $id = (int) $id;
+
+        $pdo = Database::getInstance()->getConnection();
+
+        // Получить поля
+        $stmt = $pdo->prepare("
+        SELECT cf.field_name, cf.field_type 
+        FROM collection_fields cf
+        JOIN collections c ON c.id = cf.collection_id
+        WHERE c.table_name = ?
+    ");
+        $stmt->execute([$table]);
+        $fields = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Получить данные записи
+        $stmt = $pdo->prepare("SELECT * FROM collection_$table WHERE id = ?");
+        $stmt->execute([$id]);
+        $record = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$record) {
+            http_response_code(404);
+            echo "Запись не найдена";
+            return;
+        }
+
+        View::render('collections/edit', [
+            'table' => $table,
+            'fields' => $fields,
+            'record' => $record,
+        ]);
+    }
+
+    public function update($table, $id)
+    {
+        $table = preg_replace('/[^a-zA-Z0-9_]/', '', $table);
+        $id = (int) $id;
+
+        $pdo = Database::getInstance()->getConnection();
+
+        $stmt = $pdo->prepare("
+        SELECT cf.field_name 
+        FROM collection_fields cf
+        JOIN collections c ON c.id = cf.collection_id
+        WHERE c.table_name = ?
+    ");
+        $stmt->execute([$table]);
+        $fields = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $sets = [];
+        $values = [];
+
+        foreach ($fields as $field) {
+            $name = $field['field_name'];
+            $sets[] = "$name = ?";
+            $values[] = $_POST[$name] ?? null;
+        }
+
+        $values[] = $id;
+
+        $sql = "UPDATE collection_$table SET " . implode(', ', $sets) . " WHERE id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($values);
+
+        header("Location: /collections/$table/view");
+        exit;
+    }
+
+    public function delete($table, $id)
+    {
+        $table = preg_replace('/[^a-zA-Z0-9_]/', '', $table);
+        $id = (int) $id;
+
+        $pdo = Database::getInstance()->getConnection();
+        $stmt = $pdo->prepare("DELETE FROM collection_$table WHERE id = ?");
+        $stmt->execute([$id]);
+
+        header("Location: /collections/$table/view");
+        exit;
+    }
+
 }

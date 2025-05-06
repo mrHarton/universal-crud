@@ -11,6 +11,13 @@ class Router
         $actionName = $segments[1] ?? 'index';
         $params = array_slice($segments, 2);
 
+        if ($segments[0] === 'collections' && ($segments[2] ?? '') === 'view') {
+            require_once __DIR__ . '/../app/Controllers/CollectionController.php';
+            $controller = new CollectionController();
+            $controller->view($segments[1]); // table name
+            return;
+        }
+
         $controllerClass = ucfirst($controllerName) . 'Controller';
         $controllerFile = __DIR__ . '/../app/Controllers/' . $controllerClass . '.php';
 

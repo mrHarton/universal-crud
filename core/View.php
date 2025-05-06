@@ -2,13 +2,13 @@
 
 class View
 {
-    public static function render($view, $params = [])
+    public static function render(string $view, array $params = []): void
     {
         extract($params);
 
         $viewFile = __DIR__ . '/../app/Views/' . $view . '.php';
         if (!file_exists($viewFile)) {
-            throw new Exception("View $view not found");
+            throw new Exception("View '$view' not found: $viewFile");
         }
 
         ob_start();

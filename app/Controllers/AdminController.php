@@ -1,14 +1,21 @@
 <?php
 
 class AdminController {
-    public function dashboard() {
-        $db = Database::getInstance()->getConnection();
-        $collections = $db->query("SELECT * FROM collections")->fetchAll(PDO::FETCH_ASSOC);
-        require __DIR__ . '/../Views/admin/dashboard.php';
+    public function dashboard()
+    {
+        View::render('admin/dashboard');
     }
 
     public function create() {
         require __DIR__ . '/../Views/admin/create.php';
+    }
+
+    public function collections()
+    {
+        // Заглушка — позже сюда подгрузим коллекции из базы
+        $collections = []; // пока пусто
+
+        View::render('admin/collections', ['collections' => $collections]);
     }
 
     public function store() {

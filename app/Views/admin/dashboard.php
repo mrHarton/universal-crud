@@ -1,8 +1,7 @@
-<h1>Collections</h1>
-<a href="/admin/create">+ Create New Collection</a>
+<h1>Admin Dashboard</h1>
+<p>Добро пожаловать, администратор!</p>
 
 <ul>
-    <?php foreach ($collections as $c): ?>
-        <li><?= htmlspecialchars($c['name']) ?> (<?= $c['table_name'] ?>)</li>
-    <?php endforeach; ?>
+    <li><a href="/admin/collections">Посмотреть коллекции</a></li>
+    <li><a href="/admin/create">Создать коллекцию</a></li>
 </ul>

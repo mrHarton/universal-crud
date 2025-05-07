@@ -51,6 +51,12 @@ class Router
             return;
         }
 
+        if ($segments[0] === 'collections' && isset($segments[1])) {
+            require_once __DIR__ . '/../app/Controllers/CollectionsController.php';
+            $controller = new CollectionsController();
+            return $controller->view($segments[1]);
+        }
+
         if ($uri === 'login') {
             require_once __DIR__ . '/../app/Controllers/AuthController.php';
             $controller = new AuthController();

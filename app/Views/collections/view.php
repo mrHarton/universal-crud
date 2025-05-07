@@ -1,34 +1,28 @@
-<h1>Данные коллекции: <?= htmlspecialchars($table) ?></h1>
+<?php View::start('title') ?>
+Коллекция: <?= htmlspecialchars($collectionName) ?>
+<?php View::end() ?>
 
-<?php if (empty($rows)): ?>
-    <p>Пока нет данных.</p>
+<h1>Коллекция: <?= htmlspecialchars($collectionName) ?></h1>
+
+<?php if (empty($data)): ?>
+    <p>Нет данных.</p>
 <?php else: ?>
     <table border="1" cellpadding="5">
         <thead>
             <tr>
-                <th>ID</th>
-                <?php foreach ($fields as $field): ?>
-                    <th><?= htmlspecialchars($field) ?></th>
-                <?php endforeach; ?>
-                <th>Действия</th>
+                <?php foreach (array_keys($data[0]) as $column): ?>
+                    <th><?= htmlspecialchars($column) ?></th>
+                <?php endforeach ?>
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($rows as $row): ?>
+            <?php foreach ($data as $row): ?>
                 <tr>
-                    <td><?= $row['id'] ?></td>
-                    <?php foreach ($fields as $field): ?>
-                        <td><?= htmlspecialchars($row[$field] ?? '') ?></td>
-                    <?php endforeach; ?>
-                    <td>
-                        <a href="/collections/<?= $table ?>/edit/<?= $row['id'] ?>">✏️</a>
-                        <a href="/collections/<?= $table ?>/delete/<?= $row['id'] ?>"
-                            onclick="return confirm('Удалить?')">🗑️</a>
-                    </td>
+                    <?php foreach ($row as $value): ?>
+                        <td><?= htmlspecialchars($value) ?></td>
+                    <?php endforeach ?>
                 </tr>
-            <?php endforeach; ?>
+            <?php endforeach ?>
         </tbody>
     </table>
-<?php endif; ?>
-
-<a href="/admin/collections">← Назад к списку</a>
+<?php endif ?>

@@ -1,3 +1,7 @@
+<?php View::start('title') ?>
+Создание новой коллекции
+<?php View::end() ?>
+
 <h1>Создать новую коллекцию</h1>
 
 <form method="post" action="/admin/store" id="collection-form">

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Universal CRUD</title>
+    <title><?= View::section('title') ?? 'Universal CRUD' ?></title>
     <style>
         body {
             font-family: sans-serif;

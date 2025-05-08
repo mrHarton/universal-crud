@@ -2,35 +2,26 @@
 
 class CollectionController
 {
-    public function view($table)
+    public function view(string $name)
     {
-        $table = preg_replace('/[^a-zA-Z0-9_]/', '', $table); // защита
-
         $pdo = Database::getInstance()->getConnection();
 
-        // Проверим, существует ли таблица
-        $stmt = $pdo->prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?");
-        $stmt->execute(["collection_" . $table]);
-        if (!$stmt->fetch()) {
+        // Имя таблицы: collection_users, collection_products и т.д.
+        $tableName = 'collection_' . preg_replace('/[^a-zA-Z0-9_]/', '', strtolower($name));
+        $stmt = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name='$tableName'");
+        $exists = $stmt->fetch();
+
+        if (!$exists) {
             http_response_code(404);
-            echo "Коллекция не найдена.";
+            echo "Коллекция не найдена";
             return;
         }
 
-        // Получим данные
-        $rows = $pdo->query("SELECT * FROM collection_$table")->fetchAll(PDO::FETCH_ASSOC);
-
-        // Получим схему полей из мета-таблицы
-        $fieldsStmt = $pdo->prepare("SELECT field_name FROM collection_fields 
-                                     JOIN collections ON collections.id = collection_fields.collection_id 
-                                     WHERE collections.table_name = ?");
-        $fieldsStmt->execute([$table]);
-        $fields = $fieldsStmt->fetchAll(PDO::FETCH_COLUMN);
+        $data = $pdo->query("SELECT * FROM $tableName")->fetchAll(PDO::FETCH_ASSOC);
 
         View::render('collections/view', [
-            'table' => $table,
-            'rows' => $rows,
-            'fields' => $fields,
+            'collectionName' => $name,
+            'data' => $data
         ]);
     }
 

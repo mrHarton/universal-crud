@@ -6,7 +6,6 @@ class Router
     {
         $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
         $segments = array_values(array_filter(explode('/', $uri)));  // ← Убираем пустые сегменты
-        var_dump($segments);
 
         $controllerName = $segments[0] ?? 'home';
         $actionName = $segments[1] ?? 'index';
@@ -46,10 +45,9 @@ class Router
                 return;
             }
 
-            if (!empty($segments[0]) && isset($segments[1])) {
+            if (isset($segments[1])) {
                 return $controller->view($segments[1]);
             }
-
     
         }
 
@@ -69,14 +67,6 @@ class Router
 
         $controllerClass = ucfirst($controllerName) . 'Controller';
         $controllerFile = __DIR__ . '/../app/Controllers/' . $controllerClass . '.php';
-
-        // Отладка
-        // echo "<pre>";
-        // echo "URI: $uri\n";
-        // echo "Controller: $controllerClass\n";
-        // echo "Action: $actionName\n";
-        // echo "Looking for file: $controllerFile\n";
-        // echo "</pre>";
 
         if (!file_exists($controllerFile)) {
             http_response_code(404);

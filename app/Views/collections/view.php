@@ -2,8 +2,6 @@
 Коллекция: <?= htmlspecialchars($collectionName) ?>
 <?php View::end() ?>
 
-<h1>Коллекция: <?= htmlspecialchars($collectionName) ?></h1>
-
 <?php if (empty($data)): ?>
     <p>Нет данных.</p>
 <?php else: ?>

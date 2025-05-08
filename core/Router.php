@@ -51,7 +51,7 @@ class Router
             return;
         }
 
-        if ($segments[0] === 'collections' && isset($segments[1])) {
+        if (!empty($segments[0]) && $segments[0] === 'collections' && isset($segments[1])) {
             require_once __DIR__ . '/../app/Controllers/CollectionsController.php';
             $controller = new CollectionsController();
             return $controller->view($segments[1]);

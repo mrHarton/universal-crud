@@ -8,7 +8,7 @@
             <strong><?= htmlspecialchars($collection['name']) ?></strong> —
             <code>collection_<?= htmlspecialchars($collection['table_name']) ?></code>
             &nbsp;
-            <a href="/collections/<?= urlencode($collection['table_name']) ?>/view">Открыть</a>
+            <a href="/collections/<?= urlencode($collection['table_name']) ?>">Открыть</a>
         </li>
     <?php endforeach; ?>
 </ul>

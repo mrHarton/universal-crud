@@ -6,55 +6,51 @@ class Router
     {
         $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
         $segments = array_values(array_filter(explode('/', $uri)));  // ← Убираем пустые сегменты
+        var_dump($segments);
 
         $controllerName = $segments[0] ?? 'home';
         $actionName = $segments[1] ?? 'index';
         $params = array_slice($segments, 2);
 
-        // Спец-маршрут: просмотр коллекции
-        if ($controllerName === 'collections' && ($segments[2] ?? '') === 'view') {
+        if ($controllerName === 'collections') {
             require_once __DIR__ . '/../app/Controllers/CollectionController.php';
             $controller = new CollectionController();
-            $controller->view($segments[1]);
-            return;
-        }
 
-        // Спец-маршрут: добавление записи
-        if ($controllerName === 'collections' && ($segments[2] ?? '') === 'add') {
-            require_once __DIR__ . '/../app/Controllers/CollectionController.php';
-            $controller = new CollectionController();
-            $controller->add($segments[1]);
-            return;
-        }
+            // Спец-маршрут: просмотр коллекции
+            if (($segments[2] ?? '') === 'view') {
+                $controller->view($segments[1]);
+                return;
+            }
 
-        // Форма редактирования
-        if ($controllerName === 'collections' && ($segments[2] ?? '') === 'edit') {
-            require_once __DIR__ . '/../app/Controllers/CollectionController.php';
-            $controller = new CollectionController();
-            $controller->edit($segments[1], $segments[3] ?? null);
-            return;
-        }
+            // Спец-маршрут: добавление записи
+            if (($segments[2] ?? '') === 'add') {
+                $controller->add($segments[1]);
+                return;
+            }
 
-        // Обновление записи
-        if ($controllerName === 'collections' && ($segments[2] ?? '') === 'update') {
-            require_once __DIR__ . '/../app/Controllers/CollectionController.php';
-            $controller = new CollectionController();
-            $controller->update($segments[1], $segments[3] ?? null);
-            return;
-        }
+            // Форма редактирования
+            if (($segments[2] ?? '') === 'edit') {
+                $controller->edit($segments[1], $segments[3] ?? null);
+                return;
+            }
 
-        // Удаление записи
-        if ($controllerName === 'collections' && ($segments[2] ?? '') === 'delete') {
-            require_once __DIR__ . '/../app/Controllers/CollectionController.php';
-            $controller = new CollectionController();
-            $controller->delete($segments[1], $segments[3] ?? null);
-            return;
-        }
+            // Обновление записи
+            if (($segments[2] ?? '') === 'update') {
+                $controller->update($segments[1], $segments[3] ?? null);
+                return;
+            }
 
-        if (!empty($segments[0]) && $segments[0] === 'collections' && isset($segments[1])) {
-            require_once __DIR__ . '/../app/Controllers/CollectionsController.php';
-            $controller = new CollectionsController();
-            return $controller->view($segments[1]);
+            // Удаление записи
+            if (($segments[2] ?? '') === 'delete') {
+                $controller->delete($segments[1], $segments[3] ?? null);
+                return;
+            }
+
+            if (!empty($segments[0]) && isset($segments[1])) {
+                return $controller->view($segments[1]);
+            }
+
+    
         }
 
         if ($uri === 'login') {
@@ -63,13 +59,13 @@ class Router
             $controller->login();
             return;
         }
-        
+
         if ($uri === 'logout') {
             require_once __DIR__ . '/../app/Controllers/AuthController.php';
             $controller = new AuthController();
             $controller->logout();
             return;
-        }        
+        }
 
         $controllerClass = ucfirst($controllerName) . 'Controller';
         $controllerFile = __DIR__ . '/../app/Controllers/' . $controllerClass . '.php';

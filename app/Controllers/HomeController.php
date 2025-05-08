@@ -4,6 +4,6 @@ class HomeController
 {
     public function index()
     {
-        echo "Welcome to Universal CRUD!";
+        echo "Добро пожаловать";
     }
 }

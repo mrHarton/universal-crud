@@ -19,6 +19,7 @@
                     <?php foreach ($row as $value): ?>
                         <td><?= htmlspecialchars($value) ?></td>
                     <?php endforeach ?>
+                    <td><a href= <?php echo "/collections/" . $collectionName . "/edit/" . $row["id"] ?> >Edit</a></td>
                 </tr>
             <?php endforeach ?>
         </tbody>

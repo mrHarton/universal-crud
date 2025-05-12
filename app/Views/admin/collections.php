@@ -9,6 +9,7 @@
             <code>collection_<?= htmlspecialchars($collection['table_name']) ?></code>
             &nbsp;
             <a href="/collections/<?= urlencode($collection['table_name']) ?>">Открыть</a>
+            <a href="/admin/collections/<?= urlencode($collection['table_name']) ?>/edit">Редактировать</a>
         </li>
     <?php endforeach; ?>
 </ul>

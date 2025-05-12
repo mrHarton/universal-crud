@@ -151,4 +151,13 @@ class CollectionController
         exit;
     }
 
+    public function collections()
+    {
+        $pdo = Database::getInstance()->getConnection();
+        $stmt = $pdo->query("SELECT * FROM collections");
+        $collections = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        View::render('collections', ['collections' => $collections]);
+    }
+
 }

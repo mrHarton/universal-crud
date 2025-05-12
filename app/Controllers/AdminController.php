@@ -9,7 +9,7 @@ class AdminController
             echo "Доступ запрещён";
             return;
         }
-        
+
         View::render('admin/dashboard');
     }
 
@@ -20,7 +20,7 @@ class AdminController
             echo "Доступ запрещён";
             return;
         }
-        
+
         View::render('admin/create');
     }
 
@@ -31,14 +31,14 @@ class AdminController
             echo "Доступ запрещён";
             return;
         }
-        
+
         $pdo = Database::getInstance()->getConnection();
         $stmt = $pdo->query("SELECT * FROM collections");
         $collections = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
         View::render('admin/collections', ['collections' => $collections]);
     }
-    
+
 
     public function store()
     {
@@ -47,7 +47,7 @@ class AdminController
             echo "Доступ запрещён";
             return;
         }
-        
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo "Method Not Allowed";
@@ -96,5 +96,25 @@ class AdminController
             $pdo->rollBack();
             echo "Error: " . $e->getMessage();
         }
+    }
+
+    public function edit(string $table_name)
+    {
+        if (!Auth::check() || !Auth::isAdmin()) {
+            http_response_code(403);
+            echo "Доступ запрещён";
+            return;
+        }
+
+        $pdo = Database::getInstance()->getConnection();
+
+        // Подготовка запроса с параметром
+        $stmt = $pdo->prepare("SELECT * FROM collections WHERE table_name = :table_name");
+        $stmt->execute(['table_name' => $table_name]); // Передача параметра
+
+        // Получение результата
+        $collection = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        View::render('admin/edit', ['collection' => $collection]);
     }
 }

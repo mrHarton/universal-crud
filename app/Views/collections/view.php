@@ -20,6 +20,7 @@
                         <td><?= htmlspecialchars($value) ?></td>
                     <?php endforeach ?>
                     <td><a href= <?php echo "/collections/" . $collectionName . "/edit/" . $row["id"] ?> >Edit</a></td>
+                    <td><a href= <?php echo "/collections/" . $collectionName . "/delete/" . $row["id"] ?> >Delete</a></td>
                 </tr>
             <?php endforeach ?>
         </tbody>

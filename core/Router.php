@@ -47,8 +47,19 @@ class Router
 
             if (isset($segments[1])) {
                 return $controller->view($segments[1]);
+            } else {
+                return $controller->collections();
             }
     
+        }
+
+        if ($controllerName === "admin") {
+            require_once __DIR__ . '/../app/Controllers/AdminController.php';
+            $controller = new AdminController();
+
+            if (($segments[3] ?? '') === 'edit') {
+                return $controller->edit($segments[2]);
+            } 
         }
 
         if ($uri === 'login') {

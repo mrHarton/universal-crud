@@ -18,7 +18,7 @@ class AuthController
                     'username' => $user['username'],
                     'role' => $user['role'],
                 ];
-                header("Location: /");
+                header("Location: /admin/dashboard");
                 exit;
             }
 

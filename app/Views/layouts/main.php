@@ -25,8 +25,8 @@
 
     <nav>
         <a href="/">Главная</a>
-        <a href="/admin/dashboard">Админка</a>
-        <a href="/admin/collections">Коллекции</a>
+        <?php if (Auth::check()): ?><a href="/admin/dashboard">Админка</a><?php endif; ?>
+        <a href="/collections">Коллекции</a>
     </nav>
 
     <hr>

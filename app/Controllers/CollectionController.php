@@ -27,6 +27,12 @@ class CollectionController
 
     public function add($table)
     {
+        if (!Auth::check()) {
+            http_response_code(403);
+            echo "Доступ запрещён";
+            return;
+        }
+
         $table = preg_replace('/[^a-zA-Z0-9_]/', '', $table);
         $pdo = Database::getInstance()->getConnection();
 

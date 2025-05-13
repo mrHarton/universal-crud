@@ -2,6 +2,8 @@
 Коллекция: <?= htmlspecialchars($collectionName) ?>
 <?php View::end() ?>
 
+<a href="/collections/<?= htmlspecialchars($collectionName) ?>/add" style="display: inline-block; margin-bottom: 10px; padding: 5px 10px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">Добавить запись</a>
+
 <?php if (empty($data)): ?>
     <p>Нет данных.</p>
 <?php else: ?>

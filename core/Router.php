@@ -27,6 +27,12 @@ class Router
                 return;
             }
 
+            // Спец-маршрут: сохранение записи (POST-запрос)
+            if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($segments[2] ?? '') === 'add') {
+                $controller->add($segments[1]);
+                return;
+            }
+
             // Форма редактирования
             if (($segments[2] ?? '') === 'edit') {
                 $controller->edit($segments[1], $segments[3] ?? null);

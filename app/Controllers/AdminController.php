@@ -54,6 +54,7 @@ class AdminController
             return;
         }
 
+        $collectionId = $_POST['collection_id'] ?? null; // ID коллекции для обновления (если есть)
         $tableName = preg_replace('/[^a-zA-Z0-9_]/', '', strtolower($_POST['table_name']));
         $displayName = $_POST['display_name'] ?? '';
         $fields = $_POST['fields'] ?? [];
@@ -62,19 +63,45 @@ class AdminController
         $pdo->beginTransaction();
 
         try {
-            // Insert collection
-            $stmt = $pdo->prepare("INSERT INTO collections (name, table_name) VALUES (?, ?)");
-            $stmt->execute([$displayName, $tableName]);
-            $collectionId = $pdo->lastInsertId();
+            if ($collectionId) {
+                // Обновление существующей коллекции
+                $stmt = $pdo->prepare("UPDATE collections SET name = ?, table_name = ? WHERE id = ?");
+                $stmt->execute([$displayName, $tableName, $collectionId]);
 
-            // Insert fields
-            $createFields = ["id INTEGER PRIMARY KEY AUTOINCREMENT"];
+                // Получение текущих полей из базы
+                $stmt = $pdo->prepare("SELECT field_name FROM collection_fields WHERE collection_id = ?");
+                $stmt->execute([$collectionId]);
+                $existingFields = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+                // Удаление старых полей, которых больше нет в запросе
+                foreach ($existingFields as $existingField) {
+                    $found = false;
+                    foreach ($fields as $field) {
+                        if ($field['name'] === $existingField) {
+                            $found = true;
+                            break;
+                        }
+                    }
+                    if (!$found) {
+                        $pdo->exec("ALTER TABLE collection_$tableName DROP COLUMN $existingField");
+                        $pdo->prepare("DELETE FROM collection_fields WHERE collection_id = ? AND field_name = ?")
+                            ->execute([$collectionId, $existingField]);
+                    }
+                }
+            } else {
+                // Создание новой коллекции
+                $stmt = $pdo->prepare("INSERT INTO collections (name, table_name) VALUES (?, ?)");
+                $stmt->execute([$displayName, $tableName]);
+                $collectionId = $pdo->lastInsertId();
+
+                // Создание таблицы
+                $pdo->exec("CREATE TABLE collection_$tableName (id INTEGER PRIMARY KEY AUTOINCREMENT)");
+            }
+
+            // Добавление новых полей или обновление существующих
             foreach ($fields as $field) {
                 $name = preg_replace('/[^a-zA-Z0-9_]/', '', strtolower($field['name']));
                 $type = strtolower($field['type']);
-
-                $pdo->prepare("INSERT INTO collection_fields (collection_id, field_name, field_type) VALUES (?, ?, ?)")
-                    ->execute([$collectionId, $name, $type]);
 
                 $sqlType = match ($type) {
                     'string' => 'VARCHAR(255)',
@@ -83,12 +110,18 @@ class AdminController
                     'date' => 'DATE',
                     default => 'TEXT'
                 };
-                $createFields[] = "$name $sqlType";
-            }
 
-            // Create actual dynamic table
-            $sql = "CREATE TABLE IF NOT EXISTS collection_$tableName (" . implode(', ', $createFields) . ")";
-            $pdo->exec($sql);
+                if (!in_array($name, $existingFields)) {
+                    // Добавление нового поля
+                    $pdo->exec("ALTER TABLE collection_$tableName ADD COLUMN $name $sqlType");
+                    $pdo->prepare("INSERT INTO collection_fields (collection_id, field_name, field_type) VALUES (?, ?, ?)")
+                        ->execute([$collectionId, $name, $type]);
+                } else {
+                    // Обновление типа существующего поля
+                    $pdo->prepare("UPDATE collection_fields SET field_type = ? WHERE collection_id = ? AND field_name = ?")
+                        ->execute([$type, $collectionId, $name]);
+                }
+            }
 
             $pdo->commit();
             header("Location: /admin/dashboard");
@@ -114,6 +147,14 @@ class AdminController
 
         // Получение результата
         $collection = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $collection['id'];
+
+        $stmt = $pdo->prepare("SELECT * FROM collection_fields WHERE collection_id = :collection_id");
+        $stmt->execute(['collection_id' => $collection['id']]);
+
+        $fields = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $collection['fields'] = $fields;
 
         View::render('admin/edit', ['collection' => $collection]);
     }

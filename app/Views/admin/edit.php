@@ -23,24 +23,26 @@
 
         <div id="fields">
             <h3>Поля:</h3>
-            <div class="field">
-                <input type="text" name="fields[0][name]" placeholder="Имя поля" required>
-                <select name="fields[0][type]">
-                    <option value="TEXT">Текст</option>
-                    <option value="INTEGER">Число</option>
-                    <option value="REAL">Десятичное</option>
-                    <option value="DATE">Дата</option>
-                </select>
-            </div>
+            <?php foreach ($collection['fields'] as $index => $field): ?>
+                <div class="field">
+                    <input type="text" name="fields[<?= $index ?>][name]" placeholder="Имя поля" required value="<?= $field['field_name'] ?>">
+                    <select name="fields[<?= $index ?>][type]">
+                        <option value="TEXT" <?= strtoupper($field['field_type']) === 'TEXT' ? 'selected' : '' ?>>Текст</option>
+                        <option value="INTEGER" <?= strtoupper($field['field_type']) === 'INTEGER' ? 'selected' : '' ?>>Число</option>
+                        <option value="REAL" <?= strtoupper($field['field_type']) === 'REAL' ? 'selected' : '' ?>>Десятичное</option>
+                        <option value="DATE" <?= strtoupper($field['field_type']) === 'DATE' ? 'selected' : '' ?>>Дата</option>
+                    </select>
+                </div>
+            <?php endforeach; ?>
         </div>
 
         <button type="button" onclick="addField()">Добавить поле</button>
         <br><br>
-        <button type="submit">Создать коллекцию</button>
+        <button type="submit">Сохранить</button>
     </form>
 
     <script>
-        let fieldIndex = 1;
+        let fieldIndex = <?= count($collection['fields']) ?>;
         function addField() {
             const div = document.createElement('div');
             div.classList.add('field');
